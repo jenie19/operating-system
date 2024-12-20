@@ -1,0 +1,48 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_BLOCKS 100  // Maximum number of blocks in the index
+#define MAX_RECORDS 100  // Maximum number of records
+#define RECORD_SIZE 100  // Maximum size of each record
+
+// Structure to represent an index block
+struct IndexBlock {
+    int blockPointers[MAX_BLOCKS];  // Array of pointers to blocks
+};
+
+// Function to add a record and update the index block
+void addRecord(char file[][RECORD_SIZE], struct IndexBlock *index, int *num_blocks, char *new_record) {
+    if (*num_blocks < MAX_BLOCKS) {
+        strncpy(file[*num_blocks], new_record, RECORD_SIZE);
+        index->blockPointers[*num_blocks] = *num_blocks;  // Point to the new block
+        (*num_blocks)++;
+        printf("Record added: %s\n", new_record);
+    } else {
+        printf("File is full. Cannot add more records.\n");
+    }
+}
+
+// Function to display all blocks and their contents
+void displayFile(char file[][RECORD_SIZE], struct IndexBlock index, int num_blocks) {
+    printf("\nContents of the file:\n");
+    for (int i = 0; i < num_blocks; i++) {
+        printf("Block %d: %s\n", i, file[index.blockPointers[i]]);
+    }
+}
+
+int main() {
+    char file[MAX_BLOCKS][RECORD_SIZE];  // Simulating the file with an array of strings
+    struct IndexBlock index;             // Simulating the index block
+    int num_blocks = 0;                  // Number of blocks used
+
+    // Adding records to the file and updating index block
+    addRecord(file, &index, &num_blocks, "First record");
+    addRecord(file, &index, &num_blocks, "Second record");
+    addRecord(file, &index, &num_blocks, "Third record");
+
+    // Displaying the file contents using index
+    displayFile(file, index, num_blocks);
+
+    return 0;
+}
