@@ -1,0 +1,60 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Function to calculate total seek time for C-SCAN scheduling
+int calculateTotalSeekTimeCSCAN(int requests[], int n, int start, int disk_size) {
+    int total_seek_time = 0;
+    int current_position = start;
+
+    // Sorting requests
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (requests[j] > requests[j + 1]) {
+                int temp = requests[j];
+                requests[j] = requests[j + 1];
+                requests[j + 1] = temp;
+            }
+        }
+    }
+
+    // Process requests from the current position to the end of disk
+    for (int i = 0; i < n; i++) {
+        total_seek_time += abs(requests[i] - current_position);
+        current_position = requests[i];
+    }
+
+    // After reaching the end, wrap around to the beginning
+    total_seek_time += abs(disk_size - 1 - current_position); // move to end
+    total_seek_time += current_position; // move back to start
+
+    return total_seek_time;
+}
+
+int main() {
+    int n; // Number of disk requests
+    int start; // Starting disk position
+    int disk_size; // Maximum disk size
+
+    // Prompt user for the number of disk requests, starting position, and disk size
+    printf("Enter the number of disk requests: ");
+    scanf("%d", &n);
+
+    int requests[n]; // Array to hold disk requests
+
+    printf("Enter the disk requests:\n");
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &requests[i]);
+    }
+
+    printf("Enter the starting disk position: ");
+    scanf("%d", &start);
+
+    printf("Enter the disk size: ");
+    scanf("%d", &disk_size);
+
+    int total_seek_time = calculateTotalSeekTimeCSCAN(requests, n, start, disk_size);
+
+    printf("\nTotal seek time for C-SCAN: %d\n", total_seek_time);
+
+    return 0;
+}
