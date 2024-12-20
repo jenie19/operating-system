@@ -1,0 +1,30 @@
+#include <stdio.h>
+#include <dirent.h>
+#include <stdlib.h>
+
+void listFiles(const char *path) {
+    struct dirent *entry;
+    DIR *dp = opendir(path);
+
+    if (dp == NULL) {
+        perror("opendir");
+        return;
+    }
+
+    while ((entry = readdir(dp))) {
+        printf("%s\n", entry->d_name);
+    }
+
+    closedir(dp);
+}
+
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s <directory_path>\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    listFiles(argv[1]);
+
+    return 0;
+}
