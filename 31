@@ -1,0 +1,54 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Define the number of frames in memory
+#define FRAME_SIZE 3
+
+// Function to simulate FIFO paging
+void fifoPaging(int pages[], int num_pages) {
+    int frames[FRAME_SIZE];
+    int page_faults = 0;
+    int front = 0, rear = -1;
+
+    // Initialize frame array
+    for (int i = 0; i < FRAME_SIZE; i++) {
+        frames[i] = -1; // -1 indicates empty frame
+    }
+
+    for (int i = 0; i < num_pages; i++) {
+        int page = pages[i];
+        int is_page_fault = 1;
+
+        // Check if page is already in a frame
+        for (int j = 0; j < FRAME_SIZE; j++) {
+            if (frames[j] == page) {
+                is_page_fault = 0;
+                break;
+            }
+        }
+
+        if (is_page_fault) {
+            page_faults++;
+            rear = (rear + 1) % FRAME_SIZE;
+            frames[rear] = page;
+
+            printf("Page %d inserted into frame %d\n", page, rear);
+
+            // If frame is full, remove the oldest page
+            if (rear == front) {
+                front = (front + 1) % FRAME_SIZE;
+            }
+        }
+    }
+
+    printf("\nTotal Page Faults: %d\n", page_faults);
+}
+
+int main() {
+    int pages[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}; // Sequence of page requests
+    int num_pages = sizeof(pages) / sizeof(pages[0]);
+
+    fifoPaging(pages, num_pages);
+
+    return 0;
+}
