@@ -1,0 +1,70 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Define the number of frames in memory
+#define FRAME_SIZE 3
+
+// Function to simulate LRU paging
+void lruPaging(int pages[], int num_pages) {
+    int frames[FRAME_SIZE];
+    int page_faults = 0;
+
+    // Initialize frame array
+    for (int i = 0; i < FRAME_SIZE; i++) {
+        frames[i] = -1; // -1 indicates empty frame
+    }
+
+    // Array to track the usage order of pages
+    int used_order[FRAME_SIZE];
+    for (int i = 0; i < FRAME_SIZE; i++) {
+        used_order[i] = i; // Initial positions
+    }
+
+    for (int i = 0; i < num_pages; i++) {
+        int page = pages[i];
+        int is_page_fault = 1;
+
+        // Check if page is already in a frame
+        int frame_index = -1;
+        for (int j = 0; j < FRAME_SIZE; j++) {
+            if (frames[j] == page) {
+                is_page_fault = 0;
+                frame_index = j;
+                break;
+            }
+        }
+
+        if (is_page_fault) {
+            page_faults++;
+
+            // Find the least recently used page to replace
+            int lru_index = 0;
+            for (int j = 1; j < FRAME_SIZE; j++) {
+                if (used_order[j] < used_order[lru_index]) {
+                    lru_index = j;
+                }
+            }
+
+            frames[lru_index] = page;
+
+            // Update the used order
+            used_order[lru_index] = i;
+
+            printf("Page %d inserted into frame %d\n", page, lru_index);
+        } else {
+            // Update the used order if the page is already in a frame
+            used_order[frame_index] = i;
+        }
+    }
+
+    printf("\nTotal Page Faults: %d\n", page_faults);
+}
+
+int main() {
+    int pages[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}; // Sequence of page requests
+    int num_pages = sizeof(pages) / sizeof(pages[0]);
+
+    lruPaging(pages, num_pages);
+
+    return 0;
+}
