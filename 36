@@ -1,0 +1,50 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Define the maximum number of blocks and record size
+#define MAX_BLOCKS 100
+#define RECORD_SIZE 100
+
+// Structure to represent a block in the file
+struct Block {
+    char data[RECORD_SIZE];  // Data stored in the block
+    int next;                // Pointer to the next block (-1 if it's the last block)
+};
+
+// Function to add a record to the file using linked allocation
+void addRecord(struct Block file[], int *num_blocks, char *new_record) {
+    if (*num_blocks < MAX_BLOCKS) {
+        strncpy(file[*num_blocks].data, new_record, RECORD_SIZE);
+        file[*num_blocks].next = (*num_blocks < MAX_BLOCKS - 1) ? (*num_blocks + 1) : -1;
+        (*num_blocks)++;
+        printf("Record added: %s\n", new_record);
+    } else {
+        printf("File is full. Cannot add more records.\n");
+    }
+}
+
+// Function to display the linked file contents
+void displayFile(struct Block file[], int num_blocks) {
+    printf("\nContents of the file:\n");
+    int current = 0;
+    while (current != -1) {
+        printf("Block %d: %s\n", current, file[current].data);
+        current = file[current].next;
+    }
+}
+
+int main() {
+    struct Block file[MAX_BLOCKS];  // Simulating the file with an array of blocks
+    int num_blocks = 0;             // Number of blocks used
+
+    // Adding records to the file using linked allocation
+    addRecord(file, &num_blocks, "First record");
+    addRecord(file, &num_blocks, "Second record");
+    addRecord(file, &num_blocks, "Third record");
+
+    // Displaying the linked file contents
+    displayFile(file, num_blocks);
+
+    return 0;
+}
