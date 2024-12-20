@@ -1,0 +1,31 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+void searchPatternInFile(const char *filename, const char *pattern) {
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        perror("fopen");
+        return;
+    }
+
+    char line[256];
+    while (fgets(line, sizeof(line), file)) {
+        if (strstr(line, pattern) != NULL) {
+            printf("%s", line);
+        }
+    }
+
+    fclose(file);
+}
+
+int main(int argc, char *argv[]) {
+    if (argc != 3) {
+        fprintf(stderr, "Usage: %s <filename> <pattern>\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    searchPatternInFile(argv[1], argv[2]);
+
+    return 0;
+}
